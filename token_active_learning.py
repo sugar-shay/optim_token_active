@@ -127,7 +127,7 @@ def main(data_dir, data_split, category='memc'):
     
     model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
     
-    complete_save_path = save_dir+'/memc/token_results'
+    complete_save_path = save_dir+'/memc/token_results/' +data_split
     if not os.path.exists(complete_save_path):
         os.makedirs(complete_save_path)
          
@@ -157,5 +157,5 @@ def main(data_dir, data_split, category='memc'):
 
 if __name__ == "__main__":
     data_directory = 'results/memc/token_data' 
-    main(data_dir=data_directory, category='memc')
+    main(data_dir=data_directory, data_split = 'random', category='memc')
     
