@@ -45,21 +45,21 @@ def get_cluster_regions(cluster_labels, cluster_data_df, token_input_data):
     cluster1_mask = np.array(cluster_map[cluster_map.cluster == 0].data_index)
     #print('cluster mask shape: ', cluster1_mask.shape)
     cluster1 = cluster_data_df.iloc[cluster1_mask,:]
-    cluster1_avg_conf = np.mean(cluster1['confidence'].numpy())
+    cluster1_avg_conf = np.mean(np.array(cluster1['confidence']))
     cluster1_token_input = token_input_data.iloc[cluster1_mask, :]
     
     #Cluster 2
     cluster2_mask = np.array(cluster_map[cluster_map.cluster == 1].data_index)
     #print('cluster mask shape: ', cluster1_mask.shape)
     cluster2 = cluster_data_df.iloc[cluster2_mask,:]
-    cluster2_avg_conf = np.mean(cluster2['confidence'].numpy())
+    cluster2_avg_conf = np.mean(np.array(cluster2['confidence']))
     cluster2_token_input = token_input_data.iloc[cluster2_mask, :]
  
     #Cluster 3
     cluster3_mask = np.array(cluster_map[cluster_map.cluster == 2].data_index)
     #print('cluster mask shape: ', cluster1_mask.shape)
     cluster3 = cluster_data_df.iloc[cluster3_mask,:]
-    cluster3_avg_conf = np.mean(cluster3['confidence'].numpy())
+    cluster3_avg_conf = np.mean(np.array(cluster3['confidence']))
     cluster3_token_input = token_input_data.iloc[cluster3_mask, :]
 
     cluster_info = [(cluster1_avg_conf, cluster1_token_input, cluster1), 

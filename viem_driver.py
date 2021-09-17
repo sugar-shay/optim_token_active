@@ -54,7 +54,7 @@ def main(category = 'memc', save_dir = 'results'):
                      save_fp='bert_memc.pt')
     
     
-    model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=32, patience = 2, num_gpu=1)
+    model = train_LitModel(model, train_dataset, val_dataset, max_epochs=3, batch_size=32, patience = 2, num_gpu=1)
     
     complete_save_path = save_dir+'/'+category
     if not os.path.exists(complete_save_path):
