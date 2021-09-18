@@ -82,7 +82,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     active_learning_iterations = 5
     
     # num tokens we sample
-    init_train_size = 250 
+    init_train_size = 500 
     
     MAX_LEN = 64
     
