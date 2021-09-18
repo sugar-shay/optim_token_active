@@ -82,7 +82,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     active_learning_iterations = 5
     
     # num tokens we sample
-    init_train_size = 500 
+    init_train_size = 250 
     
     MAX_LEN = 64
     
@@ -117,8 +117,10 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     
         optim_train_data = get_optim_training_data(init_train_data)
         
+        print()
+        print('Number of tokens sampled: ', init_train_data.shape[0])
         print('number of unique sentence idxs: ', len(np.unique(init_train_data['sentence_idxs'].to_numpy())))
-
+        print()
     
         
         token_labels = optim_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
