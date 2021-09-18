@@ -65,7 +65,8 @@ class ACTIVE_LIT_NER(pl.LightningModule):
         return outputs
 
     def configure_optimizers(self):
-        optimizer = AdamW(self.parameters(), lr=1e-6)
+        optimizer = AdamW(self.parameters(), lr=1e-5)
+        #1e-6
         return optimizer
 
     def training_step(self, batch, batch_idx):
