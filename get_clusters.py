@@ -170,5 +170,5 @@ def main(directory, sample_size=100000):
 
 if __name__ == "__main__":
     
-    main(directory = 'results/memc', sample_size=5000)
+    main(directory = 'results/memc', sample_size=100000)
         

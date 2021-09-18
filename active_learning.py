@@ -82,7 +82,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     active_learning_iterations = 5
     
     # num tokens we sample
-    init_train_size = 500 
+    init_train_size = 250 
     
     MAX_LEN = 64
     
@@ -145,7 +145,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
                          encoder_name = encoder_name,
                          save_fp='bert_token_memc.pt')
         
-        BATCH_SIZE = 64#64*32
+        BATCH_SIZE = 32#64*32
         
         model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
         
