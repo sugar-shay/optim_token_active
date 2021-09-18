@@ -119,11 +119,11 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
         
         #HERE ON WE NEED TO WORK ON 
-        train_dataset = Token_Level_Dataset(input_ids = optim_training_data['input_ids'], 
-                                            attention_mask = optim_training_data['attention_mask'], 
-                                            token_idxs = np.vstack(optim_training_data['token_labels']),
-                                            token_label_masks= optim_training_data['token_label_masks'], 
-                                            labels=np.vstack(optim_training_data['token_labels']))
+        train_dataset = Token_Level_Dataset(input_ids = init_train_data['input_ids'], 
+                                            attention_mask = init_train_data['attention_mask'], 
+                                            token_idxs = np.vstack(init_train_data['token_labels']),
+                                            token_label_masks= init_train_data['token_label_masks'], 
+                                            labels=np.vstack(init_train_data['token_labels']))
         
     
         
