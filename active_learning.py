@@ -111,7 +111,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     
     #performing active learning 
     cr_reports = []
-    for iteration in active_learning_iterations:
+    for iteration in range(active_learning_iterations):
         
         init_train_data['token_labels'] = init_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
         init_train_data['token_idxs'] = init_train_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
