@@ -162,7 +162,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         cr = model_testing(model, test_dataset)
         
         print()
-        print('Active Learning Iteration: ', step+1)
+        print('Active Learning Iteration: ', iteration+1)
         print('Accuracy: ', cr['accuracy'])
         print()
         
