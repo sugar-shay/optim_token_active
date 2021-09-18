@@ -78,7 +78,7 @@ def main(category = 'memc', save_dir = 'results'):
     
     model.load_state_dict(torch.load('bert_memc.pt'))
     
-    cr = model_testing(model, test_dataset)
+    cr = model_testing(model, test_dataset, output_dict=True)
     
     print(cr)
     

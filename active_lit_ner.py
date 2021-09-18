@@ -228,11 +228,9 @@ def train_LitModel(model, train_data, val_data, max_epochs, batch_size, patience
     
     early_stop_callback = EarlyStopping(monitor="val_loss", patience=patience, verbose=False, mode="min")
     
-    trainer = pl.Trainer(gpus=num_gpu, max_epochs = max_epochs)
+    trainer = pl.Trainer(gpus=num_gpu, max_epochs = max_epochs, callbacks = [early_stop_callback])
     trainer.fit(model, train_dataloader, val_dataloader)
     
-    
-    model.training_stats['gt_probs'], model.training_stats['correctness'] = (np.array(model.training_stats['gt_probs'])).T, (np.array(model.training_stats['correctness'])).T
     model.training_stats['train_losses'], model.training_stats['val_losses'] = np.array(model.training_stats['train_losses']), np.array(model.training_stats['val_losses'])
     
     return model
