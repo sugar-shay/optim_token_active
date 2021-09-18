@@ -113,17 +113,17 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     cr_reports = []
     for iteration in range(active_learning_iterations):
         
-        init_train_data['token_labels'] = init_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
-        init_train_data['token_idxs'] = init_train_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
+        token_labels = init_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
+        token_idxs = init_train_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
         
         
         
         #HERE ON WE NEED TO WORK ON 
         train_dataset = Token_Level_Dataset(input_ids = np.vstack(list(init_train_data['input_ids'])), 
                                             attention_mask = np.vstack(list(init_train_data['attention_mask'])), 
-                                            token_idxs = np.vstack(init_train_data['token_labels']),
+                                            token_idxs = np.vstack(list(token_idxs)),
                                             token_label_masks= np.vstack(list(init_train_data['token_label_masks'])), 
-                                            labels=np.vstack(init_train_data['token_labels']))
+                                            labels=np.vstack(list(token_labels)))
         
     
         
