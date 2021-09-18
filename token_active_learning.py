@@ -83,10 +83,16 @@ def main(data_dir, data_split, category='memc'):
         
     encoder_name = 'bert-base-uncased'
     
+    active_learning_iterations = 15
+    init_train_size = 250
+    init_train_data = optim_training_data.samples(n=init_train_size, random_state=0)
     
     MAX_LEN = 64
     
     tokenizer = NER_tokenizer(unique_labels, max_length=64, tokenizer_name = encoder_name)
+    
+    val_dataset = tokenizer.tokenize_and_encode_labels(val_data)
+    test_dataset = tokenizer.tokenize_and_encode_labels(test_data)
     
     '''
     # here, pad = (padding_left, padding_right, padding_top, padding_bottom)
@@ -99,61 +105,77 @@ def main(data_dir, data_split, category='memc'):
     def encode_pad_token_idxs(arr):
         return (torch.nn.functional.pad(torch.tensor(arr), pad = (MAX_LEN-1-arr.shape[0], 1), value = -100)).numpy()
     
-    optim_training_data['token_labels'] = optim_training_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
-    optim_training_data['token_idxs'] = optim_training_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
-    
-    
-    
-    
-    #HERE ON WE NEED TO WORK ON 
-    train_dataset = Token_Level_Dataset(input_ids = optim_training_data['input_ids'], 
-                                        attention_mask = optim_training_data['attention_mask'], 
-                                        token_idxs = np.vstack(optim_training_data['token_labels']),
-                                        token_label_masks= optim_training_data['token_label_masks'], 
-                                        labels=np.vstack(optim_training_data['token_labels']))
-    
-    val_dataset = tokenizer.tokenize_and_encode_labels(val_data)
-    test_dataset = tokenizer.tokenize_and_encode_labels(test_data)
-    
-    model = ACTIVE_LIT_NER(num_classes = len(tokenizer.id2tag), 
-                     id2tag = tokenizer.id2tag,
-                     tag2id = tokenizer.tag2id,
-                     hidden_dropout_prob=.1,
-                     attention_probs_dropout_prob=.1,
-                     encoder_name = encoder_name,
-                     save_fp='bert_token_memc.pt')
-    
-    BATCH_SIZE = 64#64*32
-    
-    model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
-    
     complete_save_path = save_dir+'/memc/token_results/' +data_split
     if not os.path.exists(complete_save_path):
         os.makedirs(complete_save_path)
-         
-    #saving train stats
-    with open(complete_save_path+'/bert_train_stats.pkl', 'wb') as f:
-        pickle.dump(model.training_stats, f)
+    
+    #performing active learning 
+    cr_reports = []
+    for iteration in active_learning_iterations:
+        
+        init_train_data['token_labels'] = init_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
+        init_train_data['token_idxs'] = init_train_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
+        
+        
+        
+        #HERE ON WE NEED TO WORK ON 
+        train_dataset = Token_Level_Dataset(input_ids = optim_training_data['input_ids'], 
+                                            attention_mask = optim_training_data['attention_mask'], 
+                                            token_idxs = np.vstack(optim_training_data['token_labels']),
+                                            token_label_masks= optim_training_data['token_label_masks'], 
+                                            labels=np.vstack(optim_training_data['token_labels']))
         
     
+        
+        model = ACTIVE_LIT_NER(num_classes = len(tokenizer.id2tag), 
+                         id2tag = tokenizer.id2tag,
+                         tag2id = tokenizer.tag2id,
+                         hidden_dropout_prob=.1,
+                         attention_probs_dropout_prob=.1,
+                         encoder_name = encoder_name,
+                         save_fp='bert_token_memc.pt')
+        
+        BATCH_SIZE = 64#64*32
+        
+        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=5, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
+        
+
+            
+        #save_file = 'bert_'+str(len(init_train))
+        #saving train stats
+        with open(complete_save_path+'/bert_train_stats.pkl', 'wb') as f:
+            pickle.dump(model.training_stats, f)
+            
+        
+        
+        #reloading the model for testing
+        model = PRETRAIN_LIT_NER(num_classes = len(tokenizer.id2tag), 
+                         id2tag = tokenizer.id2tag,
+                         tag2id = tokenizer.tag2id,
+                         hidden_dropout_prob=.1,
+                         attention_probs_dropout_prob=.1,
+                         encoder_name = encoder_name,
+                         save_fp='best_model.pt')
+        
+        model.load_state_dict(torch.load('bert_token_memc.pt'))
+        
+        cr = model_testing(model, test_dataset)
+        
+        print()
+        print('Active Learning Iteration: ', step+1)
+        print('Accuracy: ', cr['accuracy'])
+        print()
+        
+        cr_reports.append(cr)
+        
+        #getting samples from oracle 
+        oracle_samples = optim_training_data.sample(n=init_train_size, replace = False)
+        
+        init_train = pd.concat([init_train, oracle_samples], ignore_index=True)
     
-    #reloading the model for testing
-    model = PRETRAIN_LIT_NER(num_classes = len(tokenizer.id2tag), 
-                     id2tag = tokenizer.id2tag,
-                     tag2id = tokenizer.tag2id,
-                     hidden_dropout_prob=.1,
-                     attention_probs_dropout_prob=.1,
-                     encoder_name = encoder_name,
-                     save_fp='best_model.pt')
+    with open(complete_save_path+'/cr_reports.pkl', 'wb') as f:
+            pickle.dump(cr_reports, f)
     
-    model.load_state_dict(torch.load('bert_token_memc.pt'))
-    
-    cr = model_testing(model, test_dataset, output_dict=True)
-    
-    print(cr)
-    
-    with open(complete_save_path+'/bert_test_stats.pkl', 'wb') as f:
-            pickle.dump(cr, f)
 
 if __name__ == "__main__":
     data_directory = 'results/memc/token_data' 

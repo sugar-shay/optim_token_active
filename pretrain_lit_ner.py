@@ -339,7 +339,7 @@ def model_testing(model, test_dataset):
     #print('Len of Total Preds: ', len(total_preds))
         
         
-    cr = classification_report(list(itertools.chain(*total_labels)), list(itertools.chain(*total_preds)))
+    cr = classification_report(list(itertools.chain(*total_labels)), list(itertools.chain(*total_preds)), output_dict=True)
     return cr
         
 

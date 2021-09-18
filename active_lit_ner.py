@@ -234,3 +234,48 @@ def train_LitModel(model, train_data, val_data, max_epochs, batch_size, patience
     model.training_stats['train_losses'], model.training_stats['val_losses'] = np.array(model.training_stats['train_losses']), np.array(model.training_stats['val_losses'])
     
     return model
+
+def model_testing(model, test_dataset):
+    
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    
+    model = model.to(device)
+    
+    test_dataloader = DataLoader(test_dataset, batch_size=32)
+    
+    total_preds, total_labels = [], []
+    
+    model.eval()
+    for idx, batch in enumerate(test_dataloader):
+        
+        seq = (batch['input_ids']).to(device)
+        mask = (batch['attention_mask']).to(device)
+        labels = batch['labels']
+        
+        outputs = model(input_ids=seq, attention_mask=mask, labels=None)
+        
+        logits = outputs.logits
+        logits = torch.nn.functional.softmax(logits, dim=-1)
+        
+        preds = torch.argmax(logits, dim=-1)
+        preds = preds.detach().cpu().numpy()
+        
+        labels = labels.detach().cpu().numpy()
+        
+        active_preds = [[model.id2tag[p] for (p, l) in zip(pred, label) if l != -100] 
+              for pred, label in zip(preds, labels)]
+    
+        active_labels = [[model.id2tag[l] for (p, l) in zip(pred, label) if l != -100]
+                  for pred, label in zip(preds, labels)]
+        
+        total_preds.extend(active_preds)
+        total_labels.extend(active_labels)
+    
+    #Total Preds is list of lists with length [# sequences] by [# tokens]
+    #print('Len of Total Preds: ', len(total_preds))
+        
+        
+    cr = classification_report(list(itertools.chain(*total_labels)), list(itertools.chain(*total_preds)), output_dict=True)
+    return cr
+        
+
