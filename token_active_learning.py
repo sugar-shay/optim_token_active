@@ -85,7 +85,7 @@ def main(data_dir, data_split, category='memc'):
     
     active_learning_iterations = 15
     init_train_size = 250
-    init_train_data = optim_training_data.samples(n=init_train_size, random_state=0)
+    init_train_data = optim_training_data.sample(n=init_train_size, random_state=0)
     
     MAX_LEN = 64
     

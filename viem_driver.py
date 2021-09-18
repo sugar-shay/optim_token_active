@@ -80,7 +80,8 @@ def main(category = 'memc', save_dir = 'results'):
     
     cr = model_testing(model, test_dataset)
     
-    print(cr)
+    cr_df = pd.DataFrame(cr).transpose()
+    print(cr_df)
     
     with open(complete_save_path+'/bert_test_stats.pkl', 'wb') as f:
             pickle.dump(cr, f)
