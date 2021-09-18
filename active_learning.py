@@ -137,7 +137,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
         BATCH_SIZE = 64#64*32
         
-        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
+        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=15, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
         
 
             
@@ -171,7 +171,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         #getting samples from oracle 
         oracle_samples = optim_training_data.sample(n=init_train_size, replace = False)
         
-        init_train = pd.concat([init_train, oracle_samples], ignore_index=True)
+        init_train_data = pd.concat([init_train_data, oracle_samples], ignore_index=True)
     
     with open(complete_save_path+'/cr_reports.pkl', 'wb') as f:
             pickle.dump(cr_reports, f)
