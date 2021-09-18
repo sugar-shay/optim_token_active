@@ -106,6 +106,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     if not os.path.exists(complete_save_path):
         os.makedirs(complete_save_path)
         
+    print('Size of token train pool: ', total_train_data.shape[0])
     
     init_train_data = total_train_data.sample(n=init_train_size, random_state = 0, replace = False)
     
