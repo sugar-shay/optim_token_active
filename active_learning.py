@@ -137,7 +137,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
         BATCH_SIZE = 64#64*32
         
-        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=5, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
+        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
         
 
             
@@ -149,7 +149,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
         
         #reloading the model for testing
-        model = PRETRAIN_LIT_NER(num_classes = len(tokenizer.id2tag), 
+        model = ACTIVE_LIT_NER(num_classes = len(tokenizer.id2tag), 
                          id2tag = tokenizer.id2tag,
                          tag2id = tokenizer.tag2id,
                          hidden_dropout_prob=.1,
