@@ -83,8 +83,8 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
     encoder_name = 'bert-base-uncased'
     
-    active_learning_iterations = 15
-    init_train_size = 250
+    active_learning_iterations = 5
+    init_train_size = 100
     init_train_data = optim_training_data.sample(n=init_train_size, random_state=0)
     
     MAX_LEN = 64
@@ -137,7 +137,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
         BATCH_SIZE = 64#64*32
         
-        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=15, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
+        model = train_LitModel(model, train_dataset, val_dataset, max_epochs=10, batch_size=BATCH_SIZE, patience = 3, num_gpu=1)
         
 
             
