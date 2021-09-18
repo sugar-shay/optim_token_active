@@ -75,17 +75,14 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     
     
     with open(train_data_dir, 'rb') as f:
-        train_data = pickle.load(f)
-        
-    print('number of unique sentence idxs: ', len(np.unique(train_data['sentence_idxs'].to_numpy())))
-    
-    optim_training_data = get_optim_training_data(train_data)
-        
+        total_train_data = pickle.load(f)
+            
     encoder_name = 'bert-base-uncased'
     
     active_learning_iterations = 5
-    init_train_size = 100
-    init_train_data = optim_training_data.sample(n=init_train_size, random_state=0)
+    
+    # num tokens we sample
+    init_train_size = 500 
     
     MAX_LEN = 64
     
@@ -108,21 +105,31 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     complete_save_path = save_dir+'/memc/token_results/' +data_split
     if not os.path.exists(complete_save_path):
         os.makedirs(complete_save_path)
+        
+    
+    init_train_data = total_train_data.sample(n=init_train_size, random_state = 0, replace = False)
     
     #performing active learning 
     cr_reports = []
     for iteration in range(active_learning_iterations):
         
-        token_labels = init_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
-        token_idxs = init_train_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
+    
+        optim_train_data = get_optim_training_data(init_train_data)
+        
+        print('number of unique sentence idxs: ', len(np.unique(init_train_data['sentence_idxs'].to_numpy())))
+
+    
+        
+        token_labels = optim_train_data['token_labels'].apply(lambda x: encode_pad_token_labels(x))
+        token_idxs = optim_train_data['token_idxs'].apply(lambda x: encode_pad_token_idxs(x))
         
         
         
         #HERE ON WE NEED TO WORK ON 
-        train_dataset = Token_Level_Dataset(input_ids = np.vstack(list(init_train_data['input_ids'])), 
-                                            attention_mask = np.vstack(list(init_train_data['attention_mask'])), 
+        train_dataset = Token_Level_Dataset(input_ids = np.vstack(list(optim_train_data['input_ids'])), 
+                                            attention_mask = np.vstack(list(optim_train_data['attention_mask'])), 
                                             token_idxs = np.vstack(list(token_idxs)),
-                                            token_label_masks= np.vstack(list(init_train_data['token_label_masks'])), 
+                                            token_label_masks= np.vstack(list(optim_train_data['token_label_masks'])), 
                                             labels=np.vstack(list(token_labels)))
         
     
@@ -169,7 +176,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         cr_reports.append(cr)
         
         #getting samples from oracle 
-        oracle_samples = optim_training_data.sample(n=init_train_size, replace = False)
+        oracle_samples = total_train_data.sample(n=init_train_size, replace = False)
         
         init_train_data = pd.concat([init_train_data, oracle_samples], ignore_index=True)
     
