@@ -25,6 +25,7 @@ import pickle
 
 from tokenize_data import *
 from active_lit_ner import *
+from data_preprocess import *
 
 def get_optim_training_data(train_data):
     
@@ -58,12 +59,13 @@ def get_optim_training_data(train_data):
 
 def main(data_dir, data_split, category='memc', save_dir = 'results'):
     
-    train_data = get_single_ner(category, train = True)    
+    train_data = get_single_ner(category, train = True)
+    
     test_data = get_single_ner(category, test = True)        
         
     train_data, unique_labels = process_data(train_data, return_unique=True)
-    
     print('train data columns: ', train_data.columns)
+
     
     if category == 'memc':
         val_data = get_single_ner(category)
@@ -71,7 +73,6 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         val_data, unique_labels = process_data(val_data, return_unique=True)
 
     else:
-        train_data, unique_labels = process_data(train_data, return_unique=True)
         num_val = np.floor(.2*train_data.shape[0])
         val_data = train_data.loc[:num_val, :]
         train_data = train_data.loc[num_val:, :]
