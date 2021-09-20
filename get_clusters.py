@@ -119,20 +119,22 @@ def main(directory, sample_size=100000):
                                          'token_idxs':token_inputs['token_idxs'],
                                          })
     
+    '''
     cluster_sample_mask = np.random.RandomState(seed=21).permutation(cluster_data_df.shape[0])
     cluster_sample_mask = cluster_sample_mask[0:sample_size]
     
     cluster_data_sample = cluster_data_df.iloc[cluster_sample_mask, :]
     token_input_sample = token_input_data.iloc[cluster_sample_mask, :]
+    '''
     
-    clusters = get_clusters(cluster_data_sample)
+    clusters = get_clusters(cluster_data_df)
     with open(directory+'/'+'clusters.pkl', 'wb') as f:
         pickle.dump(clusters, f)
     
     if not os.path.exists(directory+'/token_data'):
         os.makedirs(directory+'/token_data')
 
-    cluster_regions = get_cluster_regions(clusters['cluster2d_labels'], cluster_data_sample, token_input_sample)
+    cluster_regions = get_cluster_regions(clusters['cluster2d_labels'], cluster_data_df, token_input_data)
     
     tag_count = Counter(cluster_regions['easy'][2]['labels'].to_list())
     print()
@@ -154,7 +156,7 @@ def main(directory, sample_size=100000):
 
 
     with open(directory+'/token_data/sample_data.pkl', 'wb') as f:
-        pickle.dump(token_input_sample, f)
+        pickle.dump(token_input_data, f)
     
     with open(directory+'/token_data/easy_data.pkl', 'wb') as f:
         pickle.dump(cluster_regions['easy'][1], f)
@@ -170,5 +172,5 @@ def main(directory, sample_size=100000):
 
 if __name__ == "__main__":
     
-    main(directory = 'results/memc', sample_size=100000)
+    main(directory = 'results/bypass', sample_size=100000)
         

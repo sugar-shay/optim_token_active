@@ -88,7 +88,7 @@ def main(category = 'memc', save_dir = 'results'):
 
 if __name__ == "__main__":
     
-    categories = ['memc']#, 'bypass']#, 'dirtra', 'httprs']
+    categories = ['bypass']#, 'bypass']#, 'dirtra', 'httprs']
     for cat in categories:
         main(category=cat)
     
