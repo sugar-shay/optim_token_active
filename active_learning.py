@@ -63,6 +63,8 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
         
     train_data, unique_labels = process_data(train_data, return_unique=True)
     
+    print('train data columns: ', train_data.columns)
+    
     if category == 'memc':
         val_data = get_single_ner(category)
         val_data = process_data(val_data)
