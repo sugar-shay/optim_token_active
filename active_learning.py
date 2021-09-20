@@ -58,8 +58,20 @@ def get_optim_training_data(train_data):
 
 def main(data_dir, data_split, category='memc', save_dir = 'results'):
     
-    val_data = get_single_ner(category)
+    train_data = get_single_ner(category, train = True)    
     test_data = get_single_ner(category, test = True)        
+        
+    train_data, unique_labels = process_data(train_data, return_unique=True)
+    
+    if category == 'memc':
+        val_data = get_single_ner(category)
+        val_data = process_data(val_data)
+
+    else:
+        num_val = np.floor(.2*train_data.shape[0])
+        val_data = train_data.loc[:num_val, :]
+        train_data = train_data.loc[num_val:, :]
+    
     
     val_data, unique_labels = process_data(val_data, return_unique=True)
     test_data = process_data(test_data)
@@ -189,5 +201,5 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
 
 if __name__ == "__main__":
     data_directory = 'results/bypass/token_data' 
-    main(data_dir=data_directory, data_split = 'random', category='memc')
+    main(data_dir=data_directory, data_split = 'random', category='bypass')
     
