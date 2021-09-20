@@ -119,7 +119,7 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
     def encode_pad_token_idxs(arr):
         return (torch.nn.functional.pad(torch.tensor(arr), pad = (MAX_LEN-1-arr.shape[0], 1), value = -100)).numpy()
     
-    complete_save_path = save_dir+'/memc/token_results/' +data_split
+    complete_save_path = save_dir+'/bypass/token_results/' +data_split
     if not os.path.exists(complete_save_path):
         os.makedirs(complete_save_path)
         
@@ -206,5 +206,5 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
 
 if __name__ == "__main__":
     data_directory = 'results/bypass/token_data' 
-    main(data_dir=data_directory, data_split = 'easy', category='bypass')
+    main(data_dir=data_directory, data_split = 'random', category='bypass')
     
