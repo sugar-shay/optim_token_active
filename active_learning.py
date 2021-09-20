@@ -206,5 +206,5 @@ def main(data_dir, data_split, category='memc', save_dir = 'results'):
 
 if __name__ == "__main__":
     data_directory = 'results/bypass/token_data' 
-    main(data_dir=data_directory, data_split = 'random', category='bypass')
+    main(data_dir=data_directory, data_split = 'easy', category='bypass')
     
